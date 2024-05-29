@@ -18,7 +18,7 @@ export default function ToDoList() {
   }, [reload]);
   return (
     <div className="flex gap-12 ">
-      <ListComponent todos={todos} />
+      <ListComponent setReload={setReload} todos={todos} />
       <AddTodoForm setReload={setReload} />
     </div>
   );

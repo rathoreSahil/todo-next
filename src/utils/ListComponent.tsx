@@ -5,13 +5,29 @@ import {
   AccordionContent,
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import { update } from "firebase/database";
-import { updateTodo } from "./todos";
 
 import { FaCheck } from "react-icons/fa6";
 import { MdDelete } from "react-icons/md";
+import { deleteTodo, getTodo } from "./todos";
+import { doc, updateDoc } from "firebase/firestore";
+import { db } from "@/lib/firebaseConfig";
+import { useState } from "react";
 
-export default function ListComponent({ todos }) {
+export default function ListComponent({ setReload, todos }) {
+  async function handleCheck(id) {
+    const currentTodo = await getTodo(id);
+    await updateDoc(doc(db, "todos", id), {
+      status: "completed",
+      ...currentTodo,
+    });
+    setReload((c) => c + 1);
+  }
+
+  async function handleDelete(id) {
+    await deleteTodo(id);
+    setReload((c) => c - 1);
+  }
+
   return (
     <div className="w-1/2 p-12">
       <p className="text-3xl mb-6">ToDo List</p>
@@ -24,7 +40,10 @@ export default function ListComponent({ todos }) {
             collapsible
           >
             <AccordionItem value={`item-${idx}`}>
-              <AccordionTrigger>{item.title}</AccordionTrigger>
+              <AccordionTrigger>
+                <span>{item.title}</span>
+                <span className="text-green-600">{item.status}</span>
+              </AccordionTrigger>
               <AccordionContent className="flex justify-between items-center">
                 <div>
                   {item.description}
@@ -32,10 +51,21 @@ export default function ListComponent({ todos }) {
                   Due: {item.due}
                 </div>
                 <div className="flex gap-2">
-                  <Button className="bg-green-600" size="xs">
-                    <FaCheck />
-                  </Button>
-                  <Button className="bg-red-600" size="xs">
+                  {!item.status && (
+                    <Button
+                      onClick={() => handleCheck(item.id)}
+                      className="bg-green-600"
+                      size="xs"
+                    >
+                      <FaCheck />
+                    </Button>
+                  )}
+
+                  <Button
+                    onClick={() => handleDelete(item.id)}
+                    className="bg-red-600"
+                    size="xs"
+                  >
                     <MdDelete />
                   </Button>
                 </div>

@@ -14,6 +14,8 @@ import { auth } from "@/lib/firebaseConfig";
 import { useRouter } from "next/navigation";
 
 import { useCreateUserWithEmailAndPassword } from "react-firebase-hooks/auth";
+import { addUser } from "@/utils/users";
+import Link from "next/link";
 
 export default function Signup() {
   const [firstName, setFirstName] = useState("");
@@ -31,6 +33,14 @@ export default function Signup() {
       const res = await createUserWithEmailAndPassword(email, password);
       console.log(res);
       sessionStorage.setItem("email", email);
+
+      const newUser = {
+        firstName,
+        lastName,
+        email,
+      };
+
+      await addUser(newUser);
       setFirstName("");
       setLastName("");
       setEmail("");
@@ -43,75 +53,80 @@ export default function Signup() {
   }
 
   return (
-    <div className="flex h-screen items-center justify-center">
-      <Card className="w-max m-auto ">
-        <CardHeader>
-          <CardTitle>Sign Up</CardTitle>
-          <CardDescription>Sign up for a new account</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex gap-8">
+    <>
+      <Link className="text-3xl absolute top-4 left-4" href="/">
+        ToDo
+      </Link>
+      <div className="flex h-screen items-center justify-center">
+        <Card className="w-max m-auto ">
+          <CardHeader>
+            <CardTitle>Sign Up</CardTitle>
+            <CardDescription>Sign up for a new account</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex gap-8">
+              <div>
+                <Label className="text-lg" htmlFor="firstName">
+                  First Name
+                </Label>
+                <Input
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  className="shadow-sm border-4"
+                  type="text"
+                  id="firstName"
+                  name="firstName"
+                />
+              </div>
+              <div>
+                <Label className="text-lg" htmlFor="lastName">
+                  Last Name
+                </Label>
+                <Input
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  className="shadow-sm border-4"
+                  type="text"
+                  id="lastName"
+                  name="lastName"
+                />
+              </div>
+            </div>
             <div>
-              <Label className="text-lg" htmlFor="firstName">
-                First Name
+              <Label className="text-lg" htmlFor="email">
+                Email
               </Label>
               <Input
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="shadow-sm border-4"
-                type="text"
-                id="firstName"
-                name="firstName"
+                type="email"
+                id="email"
+                name="email"
               />
             </div>
             <div>
-              <Label className="text-lg" htmlFor="lastName">
-                Last Name
+              <Label className="text-lg" htmlFor="password">
+                Password
               </Label>
               <Input
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 className="shadow-sm border-4"
-                type="text"
-                id="lastName"
-                name="lastName"
+                type="password"
+                id="password"
+                name="password"
               />
             </div>
-          </div>
-          <div>
-            <Label className="text-lg" htmlFor="email">
-              Email
-            </Label>
-            <Input
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="shadow-sm border-4"
-              type="email"
-              id="email"
-              name="email"
-            />
-          </div>
-          <div>
-            <Label className="text-lg" htmlFor="password">
-              Password
-            </Label>
-            <Input
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="shadow-sm border-4"
-              type="password"
-              id="password"
-              name="password"
-            />
-          </div>
-          <button
-            onClick={handleSubmit}
-            className="bg-primary text-white py-2 px-4 rounded-md mt-4"
-          >
-            Submit
-          </button>
-        </CardContent>
-      </Card>
-    </div>
+            <button
+              onClick={handleSubmit}
+              className="bg-primary text-white py-2 px-4 rounded-md mt-4"
+            >
+              Submit
+            </button>
+          </CardContent>
+        </Card>
+      </div>
+    </>
   );
 }

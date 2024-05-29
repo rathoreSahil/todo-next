@@ -27,6 +27,20 @@ async function getTodos() {
   }
 }
 
+async function getTodo(id) {
+  try {
+    const docRef = doc(db, "todos", id);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      return { id: docSnap.id, ...docSnap.data() };
+    } else {
+      console.log("No such document!");
+    }
+  } catch (error) {
+    console.error("Error getting document: ", error);
+  }
+}
+
 async function addTodo(todo) {
   try {
     const email = sessionStorage.getItem("email");
@@ -60,4 +74,4 @@ async function updateTodo(id, todo) {
   }
 }
 
-export { getTodos, addTodo, deleteTodo, updateTodo };
+export { getTodos, getTodo, addTodo, deleteTodo, updateTodo };
